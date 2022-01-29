@@ -265,6 +265,10 @@ slave:
   required: false
   type: integer
   default: 0
+unique_id:
+  description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+  required: false
+  type: string
 {% endconfiguration %}
 
 ### Configuring data_type and struct
@@ -314,6 +318,10 @@ swap:
   required: false
   default: none
   type: string
+unique_id:
+  description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+  required: false
+  type: string
 {% endconfiguration %}
 
 ## Configuring platform binary sensor
@@ -357,6 +365,10 @@ binary_sensors:
       description: type of address (discrete_input/coil)
       required: false
       default: coil
+      type: string
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
       type: string
 {% endconfiguration %}
 
@@ -435,6 +447,10 @@ climates:
       required: false
       type: string
       default: C
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
+      type: string
 {% endconfiguration %}
 
 ### Service `modbus.set-temperature`
@@ -467,7 +483,6 @@ modbus:
         device_class: door
         input_type: coil
         address: 117
-        device_class: door
         state_open: 1
         state_opening: 2
         state_closed: 0
@@ -475,7 +490,7 @@ modbus:
         status_register: 119
         status_register_type: holding
       - name: "Door2"
-        address: 117
+        address: 118
 ```
 
 {% configuration %}
@@ -526,6 +541,10 @@ covers:
       description: Modbus register type (holding, input), default holding.
       required: false
       type: string
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
+      type: string
 {% endconfiguration %}
 
 ### Example: Modbus cover controlled by a coil
@@ -551,7 +570,7 @@ modbus:
         scan_interval: 10
 ```
 
-### Example: Modbus cover controlled by a coil, it's state is read from the register
+### Example: Modbus cover controlled by a coil, its state is read from the register
 
 This example shows a configuration for a Modbus cover controlled using a coil. Actual cover state is read from the `status_register`. We've also specified register values to match with the states open/opening/closed/closing. The cover state is polled from Modbus every 10 seconds.
 
@@ -597,7 +616,7 @@ modbus:
         state_closed: 4
 ```
 
-### Example: Modbus cover controlled by a holding register, it's state is read from the status register
+### Example: Modbus cover controlled by a holding register, its state is read from the status register
 
 This example shows a configuration for a Modbus cover controlled using a holding register. However, cover state is read from a `status_register`. In this case, we've specified only values for `state_open` and `state_closed`, for the rest, default values are used. The cover state is polled from Modbus every 10 seconds.
 
@@ -713,6 +732,10 @@ fans:
           required: false
           default: same as command_off
           type: integer
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
+      type: string
 {% endconfiguration %}
 
 ## Configuring platform light
@@ -802,6 +825,10 @@ lights:
           required: false
           default: same as command_off
           type: integer
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
+      type: string
 {% endconfiguration %}
 
 ## Configuring platform sensor
@@ -880,6 +907,10 @@ sensors:
       type: integer
     state_class:
       description: The [state_class](https://developers.home-assistant.io/docs/core/entity/sensor#available-state-classes) of the sensor.
+      required: false
+      type: string
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
       required: false
       type: string
 {% endconfiguration %}
@@ -1001,6 +1032,10 @@ switches:
           required: false
           default: same as command_off
           type: integer
+    unique_id:
+      description: An ID that uniquely identifies this sensor. If two sensors have the same unique ID, Home Assistant will raise an exception.
+      required: false
+      type: string
 {% endconfiguration %}
 
 ## Opening an issue

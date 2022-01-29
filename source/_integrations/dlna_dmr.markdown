@@ -10,9 +10,9 @@ ha_codeowners:
   - '@StevenLooman'
   - '@chishm'
 ha_domain: dlna_dmr
-ha_ssdp: true
 ha_platforms:
   - media_player
+ha_ssdp: true
 ---
 
 The `dlna_dmr` platform allows you to control a [DLNA Digital Media Renderer](https://www.dlna.org/), such as DLNA enabled TVs or radios.
@@ -23,7 +23,7 @@ Please note that some devices, such as Samsung TVs, are rather picky about the s
 
 ## Options
 
-Options for DLNA DMR devices can be set going to **Configuration** -> **Integrations** -> **DLNA Digital Media Renderer** -> **Configuration**.
+Options for DLNA DMR devices can be set going to **Configuration** -> **Devices & Services** -> **DLNA Digital Media Renderer** -> **Configuration**.
 
 {% configuration_basic %}
 Event listener port:
@@ -33,3 +33,19 @@ Event listener callback URL:
 Poll for device availability:
   description: "Periodically try to connect to the DLNA device, even if it is unavailable. Enable this if SSDP advertisements sent by the device are not received by Home Assistant, e.g. when IP multicast is broken on your network."
 {% endconfiguration_basic %}
+
+## Services
+
+DLNA devices can support a range of features. Depending on the device itself, the following [media_player](/integrations/media_player/#services) services may be supported:
+
+* `media_player.volume_up`, `media_player.volume_down`, and `media_player.volume_set`
+* `media_player.volume_mute`
+* `media_player.media_play`
+* `media_player.media_pause` and `media_player.media_play_pause`
+* `media_player.media_stop`
+* `media_player.media_next_track`
+* `media_player.media_previous_track`
+* `media_player.play_media`
+* `media_player.shuffle_set`
+* `media_player.repeat_set`
+* `media_player.select_sound_mode`

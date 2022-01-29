@@ -8,7 +8,13 @@ ha_release: pre 0.7
 ha_domain: netgear
 ha_platforms:
   - device_tracker
+  - sensor
 ha_config_flow: true
+ha_codeowners:
+  - '@hacf-fr'
+  - '@Quentame'
+  - '@starkillerOG'
+ha_ssdp: true
 ---
 
 This platform allows you to detect presence by looking at connected devices to a [NETGEAR](https://www.netgear.com/) device.
@@ -16,6 +22,7 @@ This platform allows you to detect presence by looking at connected devices to a
 {% include integrations/config_flow.md %}
 
 Most NETGEAR routers use port 5000 to communicate, however the following list of models are known to use port 80:
+- Nighthawk RAX50
 - Nighthawk X4S - AC2600 (R7800)
 - Orbi
 - XR500

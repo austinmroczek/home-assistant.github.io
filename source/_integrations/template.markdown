@@ -8,19 +8,19 @@ ha_release: 0.12
 ha_iot_class: Local Push
 ha_quality_scale: internal
 ha_codeowners:
-  - '@home-assistant/core'
   - '@PhracturedBlue'
   - '@tetienne'
+  - '@home-assistant/core'
 ha_domain: template
 ha_platforms:
   - alarm_control_panel
   - binary_sensor
+  - button
   - cover
   - fan
   - light
   - lock
   - number
-  - select
   - sensor
   - select
   - switch
@@ -30,7 +30,7 @@ ha_platforms:
 
 The `template` integration allows creating entities which derive their values from other data. This is done by specifying [templates](/docs/configuration/templating/) for properties of an entity, like the name or the state.
 
-Sensors, binary (on/off) sensors, numbers and selects are covered on this page. For other types, please see the specific pages:
+Sensors, binary (on/off) sensors, buttons, numbers and selects are covered on this page. For other types, please see the specific pages:
 
 - [Alarm Control Panel](/integrations/alarm_control_panel.template/)
 - [Cover](/integrations/cover.template/)
@@ -41,7 +41,7 @@ Sensors, binary (on/off) sensors, numbers and selects are covered on this page. 
 - [Vacuum](/integrations/vacuum.template/)
 - [Weather](/integrations/weather.template/)
 
-Sensor, binary sensor, number and select template entities are defined in your YAML configuration files, directly under the `template:` key and cannot be configured via the UI. You can define multiple configuration blocks as a list. Each block defines sensor/binary sensor/number/select entities and can contain an optional update trigger.
+Sensor, binary sensor, button, number and select template entities are defined in your YAML configuration files, directly under the `template:` key and cannot be configured via the UI. You can define multiple configuration blocks as a list. Each block defines sensor/binary sensor/number/select entities and can contain an optional update trigger.
 
 _For old sensor/binary sensor configuration format, [see below](#legacy-binary-sensor-configuration-format)._
 
@@ -62,7 +62,7 @@ template:
           {% set bedroom = states('sensor.bedroom_temperature') | float %}
           {% set kitchen = states('sensor.kitchen_temperature') | float %}
 
-          {{ ((bedroom + kitchen) / 2) | round(1) }}
+          {{ ((bedroom + kitchen) / 2) | round(1, default=0) }}
 ```
 
 {% endraw %}
@@ -87,8 +87,8 @@ template:
         minutes: 0
     sensor:
       # Keep track how many days have past since a date
-      - name: Not smoking
-        state: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("06.07.2018", "%d.%m.%Y")) ) / 86400 ) | round }}'
+      - name: "Not smoking"
+        state: '{{ ( ( as_timestamp(now()) - as_timestamp(strptime("06.07.2018", "%d.%m.%Y")) ) / 86400 ) | round(default=0) }}'
         unit_of_measurement: "Days"
 ```
 
@@ -113,12 +113,12 @@ sensor:
       required: true
       type: template
     unit_of_measurement:
-      description: "Defines the units of measurement of the sensor, if any. This will also influence the graphical presentation in the history visualization as a continuous value. Sensors with missing `unit_of_measurement` are showing as discrete values."
+      description: "Defines the units of measurement of the sensor, if any. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value."
       required: false
       type: string
       default: None
     state_class:
-      description: "Defines the state class of the sensor, if any. Only possible value currently is `measurement`. Set this if your template sensor represents a measurement of the current value (so not a daily aggregate etc)."
+      description: "The [state_class](https://developers.home-assistant.io/docs/core/entity/sensor#available-state-classes) of the sensor. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value."
       required: false
       type: string
       default: None
@@ -175,7 +175,7 @@ number:
       description: Template for the number's current value.
       required: true
       type: template
-      description: Defines an action to run when the number value changes. The variable `value` will contain the number entered.
+      description: Defines actions to run when the number value changes. The variable `value` will contain the number entered.
       required: true
       type: action
     step:
@@ -207,11 +207,11 @@ select:
       required: true
       type: template
     select_option:
-      description: Defines an action to run to select an option from the `options` list.
+      description: Defines actions to run to select an option from the `options` list. The variable `option` will contain the option selected.
       required: true
       type: action
     options:
-      description: Template for the select's available options. The variable `option` will contain the option selected.
+      description: Template for the select's available options.
       required: true
       type: template
     optimistic:
@@ -219,8 +219,17 @@ select:
       required: false
       type: boolean
       default: false
-"[all sensor, binary sensor, number, select entities]":
-  description: Fields that can be used above for sensors, binary sensors, numbers, and selects.
+button:
+  description: List of buttons
+  required: true
+  type: map
+  keys:
+    press:
+      description: Defines actions to run to press the button.
+      required: true
+      type: action
+"[all sensor, binary sensor, button, number, select entities]":
+  description: Fields that can be used above for sensors, binary sensors, buttons, numbers, and selects.
   required: false
   type: map
   keys:
@@ -237,7 +246,7 @@ select:
       required: false
       type: template
     availability:
-      description: Defines a template to get the `available` state of the entity. If the template returns `true`, the device is `available`. If the template returns any other value, the device will be `unavailable`. If not configured, the component will always be `available`.
+      description: Defines a template to get the `available` state of the entity. If the template either fails to render or returns `True`, `"1"`, `"true"`, `"yes"`, `"on"`, `"enable"`, or a non-zero number, the entity will be `available`. If the template returns any other value, the entity will be `unavailable`. If not configured, the entity will always be `available`. Note that the string comparison not case sensitive; `"TrUe"` and `"yEs"` are allowed.
       required: false
       type: template
       default: true
@@ -252,7 +261,7 @@ template:
   # Define state-based template entities
   - sensor:
       ...
-    binary_sensor:
+  - binary_sensor:
       ...
 
   # Define trigger-based template entities
@@ -311,7 +320,7 @@ If the template accesses every state on the system, a rate limit of one update p
 
 ### Startup
 
-If you are using the state of a platform that might not be available during startup, the Template Sensor may get an `unknown` state. To avoid this, use `is_state()` function in your template. For example, you would replace {% raw %}`{{ states.cover.source.state == 'open' }}`{% endraw %} with this equivalent that returns `true`/`false` and never gives an `unknown` result:
+If you are using the state of a platform that might not be available during startup, the Template Sensor may get an `unknown` state. To avoid this, use `is_state()` function in your template. For example, you would replace {% raw %}`{{ states.switch.source.state == 'on' }}`{% endraw %} with this equivalent that returns `true`/`false` and never gives an `unknown` result:
 
 {% raw %}
 
@@ -600,7 +609,7 @@ sensors:
           required: true
           type: template
         availability_template:
-          description: Defines a template to get the `available` state of the component. If the template returns `true`, the device is `available`. If the template returns any other value, the device will be `unavailable`. If `availability_template` is not configured, the component will always be `available`.
+          description: Defines a template to get the `available` state of the entity. If the template either fails to render or returns `True`, `"1"`, `"true"`, `"yes"`, `"on"`, `"enable"`, or a non-zero number, the entity will be `available`. If the template returns any other value, the entity will be `unavailable`. If not configured, the entity will always be `available`. Note that the string comparison not case sensitive; `"TrUe"` and `"yEs"` are allowed.
           required: false
           type: template
           default: true
@@ -674,7 +683,7 @@ sensor:
         required: false
         type: string
       unit_of_measurement:
-        description: "Defines the units of measurement of the sensor, if any. This will also influence the graphical presentation in the history visualization as a continuous value. Sensors with missing `unit_of_measurement` are showing as discrete values."
+        description: "Defines the units of measurement of the sensor, if any. This will also display the value based on the user profile Number Format setting and influence the graphical presentation in the history visualization as a continuous value."
         required: false
         type: string
         default: None
@@ -710,3 +719,9 @@ sensor:
         type: device_class
         default: None
 {% endconfiguration %}
+
+## Event `event_template_reloaded`
+
+Event `event_template_reloaded` is fired when Template entities have been reloaded and entities thus might have changed.
+
+This event has no additional data.

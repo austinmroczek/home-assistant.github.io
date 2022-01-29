@@ -5,6 +5,7 @@ ha_category:
   - Climate
   - Sensor
   - Switch
+  - Energy
 ha_release: 0.59
 ha_iot_class: Local Polling
 ha_config_flow: true
@@ -20,7 +21,7 @@ ha_platforms:
 ---
 
 <p class='note warning'>
-  Daikin has removed their local API in newer products. They offer a cloud API accessible only under NDA, which is incompatible with open source. This affects units fitted with the BRP069C4x wifi adapter. Units listed under Supported Hardware below continue to have access to local control. Additionally the older but commonly available BRP072A42 adapter can be fitted to most if not all newer units for access to local control. 
+  Daikin has removed their local API in newer products. They offer a cloud API accessible only under NDA, which is incompatible with open source. This affects units fitted with the BRP069C4x wifi adapter. Units listed under Supported Hardware below continue to have access to local control. Additionally the older but commonly available BRP072A42 adapter can be fitted to most if not all newer units for access to local control.
 </p>
 
 The `daikin` integration integrates Daikin air conditioning systems into Home Assistant.
@@ -42,7 +43,7 @@ There is currently support for the following device types within Home Assistant:
 
 <div class='note'>
 
-* The integration for BRP072Cxx and SKYFi based units need API-key / password respectively. The API-key/password can be found on a sticker under the front cover. The other models are auto detected and the API-key and password field must be left empty.
+- The integration for BRP072Cxx and SKYFi based units need API-key / password respectively. The API-key/password can be found on a sticker under the front cover. The other models are auto detected and the API-key and password field must be left empty.
   
 </div>
 
@@ -85,8 +86,9 @@ Preset mode **away** translates to Daikin's "Holiday Mode":<br/>
 _"Holiday mode" is used when you want to turn off your units when you leave you home for a longer time._<br>
 <br>
 _When "Holiday mode" is enabled, the following action take place:_
- - _All connected units are turned OFF._
- - _All schedule timers are disabled._
+
+- _All connected units are turned OFF._
+- _All schedule timers are disabled._
 
 </div>
 
@@ -97,23 +99,25 @@ The `daikin` sensor platform integrates Daikin air conditioning systems into Hom
 - Inside temperature
 - Outside temperature
 - Inside humidity
-- Total instant power consumption
+- Estimated power consumption
 - Hourly energy consumption in cool mode
 - Hourly energy consumption in heat mode
-- Outside compressor frequency
+- Outside unit's compressor frequency
+- Today's total energy consumption (resets at 00:00)
 
 <div class='note'>
 
 - Some models only report outside temperature when they are turned on.
-- Some models does not have humidity sensor.
-- Some models does not report the power/energy consumption.
-- Some models does not report the compressor frequency.
+- Some models do not have humidity sensor.
+- Some models do not report the power/energy consumption.
+- Some models do not report the compressor frequency.
 
 </div>
 
 <div class='note'>
 
-- The 'total' power sensor is updated every time 100 Wh are consumed by all the AC summed together.
+- The 'Today's total energy consumption' and 'Estimated power consumption' sensor is updated every time 100 Wh are consumed by all different operating modes summed together.
+- The 'Estimated power consumption' sensor is derived from the energy consumption and not provided by the AC directly.
 - The 'cool/heat' energy sensors are updated hourly with the previous hour energy consumption
   of a given mode and a given AC.
 - The 'cool' mode also includes the 'fan' and 'dehumidifier' modes' power consumption.
@@ -130,7 +134,7 @@ Zones with the name `-` will be ignored, just as the AirBase application is work
 
 </div>
 
-Additionally the Daikin Streamer (air purifier) function can be toggled onsupported devices using a switch. Note that it isn't currently possible to reliably detect whether a specific device has streamer support, so the switch may appear in the UI even if the functionality isn't actually supported.
+Additionally the Daikin Streamer (air purifier) function can be toggled on supported devices using a switch. Note that it isn't currently possible to reliably detect whether a specific device has streamer support, so the switch may appear in the UI even if the functionality isn't actually supported.
 
 ## Region Changing
 
@@ -138,7 +142,8 @@ The European and United States controllers (Most likely the Australian controlle
 
 `http://Daikin-IP-Address/common/set_regioncode?reg=XX` Replace XX with your region code of choice.
 
-Currently known region codes: 
+Currently known region codes:
+
 - AU
 - EU
 - JP
